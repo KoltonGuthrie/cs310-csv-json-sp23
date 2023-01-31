@@ -112,7 +112,7 @@ public class Converter {
                         final int num = Integer.parseInt(x);
                         innerData.add(num);
                         
-                    } catch(Exception e) {
+                    } catch(NumberFormatException e) {
                         
                         innerData.add(x);
                         
