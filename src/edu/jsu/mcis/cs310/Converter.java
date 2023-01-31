@@ -74,18 +74,66 @@ public class Converter {
     @SuppressWarnings("unchecked")
     public static String csvToJson(String csvString) {
         
-        String result = "{}"; // default return value; replace later!
-        
+        JsonObject result = new JsonObject();
+
         try {
-        
-            // INSERT YOUR CODE HERE
+            
+            // Create JSON arrays that will hold our data
+            
+            JsonArray prodNums = new JsonArray();
+            JsonArray colHeadings = new JsonArray();
+            JsonArray data = new JsonArray();
+
+            // Store all the rows in a String
+            final String[] rows = csvString.split("\n");
+            
+            // Adding all the column headings to their JSON array. Being sure to remove the double quotes and trimming it
+            for ( String x : rows[0].split("\",") ) {
+                colHeadings.add(x.replace("\"", "").trim());
+            }
+            
+            // Loop through the leftover rows 
+            for ( int i = 1; i < rows.length; i++) {
+                // Store the column in a String array (removing doulbe quotes)
+                // Create JSON array to store the inner data that will be placed within the data JSON array
+                final String[] col = rows[i].split("\",");
+                JsonArray innerData = new JsonArray();
+                
+                prodNums.add(col[0].replace("\"", "").trim());
+                
+                // Looping through the leftover columns within the row
+                for(int j = 1; j < col.length; j++ ) {
+                    // Store the column String being sure to remove the double quotes and trimming it
+                    final String x = col[j].replace("\"", "").trim();
+                    
+                    // Try/catch to check if String is an int. If so, add it to the innerData as an int. Otherwise, add the String to the innerData
+                    try {
+                        
+                        final int num = Integer.parseInt(x);
+                        innerData.add(num);
+                        
+                    } catch(Exception e) {
+                        
+                        innerData.add(x);
+                        
+                    }
+                }
+                
+                // Adding the innerData JSON array to the data JSON array
+                data.add(innerData);
+            }
+            
+            // Adding all the other JSON arrays to the result JSON object
+            result.put("ProdNums", prodNums);
+            result.put("ColHeadings", colHeadings);
+            result.put("Data", data);
             
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         
-        return result.trim();
+        return Jsoner.serialize(result);
         
     }
     
