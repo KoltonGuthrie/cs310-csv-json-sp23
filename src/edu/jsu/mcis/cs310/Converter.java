@@ -5,6 +5,7 @@ import com.opencsv.*;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 public class Converter {
     
@@ -153,7 +154,12 @@ public class Converter {
             JsonArray prodNum = (JsonArray) json.get("ProdNums");
             JsonArray data = (JsonArray) json.get("Data");
 
-            csvWriter.writeNext(jsonArrayToStringArray(colHeadings));
+            // Convert the JsonArray to a String array
+            // Thank you @waxwing
+            // https://stackoverflow.com/a/1018798
+            String[] headings = Arrays.copyOf(colHeadings.toArray(), colHeadings.toArray().length, String[].class);
+
+            csvWriter.writeNext(headings);
             
             for(int i = 0; i < data.size(); i++) {
                 String[] arr = new String[colHeadings.size()];
@@ -183,18 +189,6 @@ public class Converter {
         
         return result.trim();
         
-    }
-    
-    private static String[] jsonArrayToStringArray(JsonArray jsonArray) {
-        Object[] arr = jsonArray.toArray();
-        
-        String[] stringArray = new String[arr.length];
-        
-        for(int i = 0; i < arr.length; i++) {
-            stringArray[i] = (String) arr[i];
-        }
-
-        return stringArray;
     }
     
 }
