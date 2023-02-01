@@ -5,9 +5,6 @@ import com.opencsv.*;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Converter {
     
@@ -96,7 +93,6 @@ public class Converter {
             
             for ( String headings : row ) {
                 colHeadings.add(headings);
-                System.out.println(headings);
             }
                          
             row = csvWriter.readNext();
