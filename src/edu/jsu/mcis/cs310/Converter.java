@@ -2,6 +2,8 @@ package edu.jsu.mcis.cs310;
 
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,33 +84,31 @@ public class Converter {
 
         try {
             
-            // Create JSON arrays that will hold our data
-            
+            // Create JSON arrays that will hold our data          
             JsonArray prodNums = new JsonArray();
             JsonArray colHeadings = new JsonArray();
             JsonArray data = new JsonArray();
-
-            // Store all the rows in a String
-            final String[] rows = csvString.split("\n");
             
-            // Adding all the column headings to their JSON array. Being sure to remove the double quotes
-            for ( String x : rows[0].split("\",") ) {
-                colHeadings.add(x.replace("\"", ""));
+            Reader reader = new StringReader(csvString);
+            CSVReader csvWriter = new CSVReader(reader);
+            
+            String[] row = csvWriter.readNext();
+            
+            for ( String headings : row ) {
+                colHeadings.add(headings);
+                System.out.println(headings);
             }
-            
-            // Loop through the leftover rows 
-            for ( int i = 1; i < rows.length; i++) {
-                // Store the column in a String array (removing doulbe quotes)
-                // Create JSON array to store the inner data that will be placed within the data JSON array
-                final String[] col = rows[i].split("\",");
-                JsonArray innerData = new JsonArray();
-                
-                prodNums.add(col[0].replace("\"", ""));
-                
-                // Looping through the leftover columns within the row
-                for(int j = 1; j < col.length; j++ ) {
-                    // Store the column String being sure to remove the double quotes
-                    final String x = col[j].replace("\"", "");
+                         
+            row = csvWriter.readNext();
+               
+            while(row != null) {
+               
+               prodNums.add(row[0]);
+               
+               JsonArray innerData = new JsonArray();
+               
+               for(int j = 1; j < row.length; j++ ) {
+                    final String x = row[j];
                     
                     // Try/catch to check if String is an int. If so, add it to the innerData as an int. Otherwise, add the String to the innerData
                     try {
@@ -122,16 +122,15 @@ public class Converter {
                         
                     }
                 }
-                
-                // Adding the innerData JSON array to the data JSON array
+               
                 data.add(innerData);
+                
+                result.put("ProdNums", prodNums);
+                result.put("ColHeadings", colHeadings);
+                result.put("Data", data);
+               
+                row = csvWriter.readNext();
             }
-            
-            // Adding all the other JSON arrays to the result JSON object
-            result.put("ProdNums", prodNums);
-            result.put("ColHeadings", colHeadings);
-            result.put("Data", data);
-            
         }
         catch (Exception e) {
             e.printStackTrace();
