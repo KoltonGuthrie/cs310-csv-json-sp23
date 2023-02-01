@@ -91,9 +91,9 @@ public class Converter {
             // Store all the rows in a String
             final String[] rows = csvString.split("\n");
             
-            // Adding all the column headings to their JSON array. Being sure to remove the double quotes and trimming it
+            // Adding all the column headings to their JSON array. Being sure to remove the double quotes
             for ( String x : rows[0].split("\",") ) {
-                colHeadings.add(x.replace("\"", "").trim());
+                colHeadings.add(x.replace("\"", ""));
             }
             
             // Loop through the leftover rows 
@@ -103,12 +103,12 @@ public class Converter {
                 final String[] col = rows[i].split("\",");
                 JsonArray innerData = new JsonArray();
                 
-                prodNums.add(col[0].replace("\"", "").trim());
+                prodNums.add(col[0].replace("\"", ""));
                 
                 // Looping through the leftover columns within the row
                 for(int j = 1; j < col.length; j++ ) {
-                    // Store the column String being sure to remove the double quotes and trimming it
-                    final String x = col[j].replace("\"", "").trim();
+                    // Store the column String being sure to remove the double quotes
+                    final String x = col[j].replace("\"", "");
                     
                     // Try/catch to check if String is an int. If so, add it to the innerData as an int. Otherwise, add the String to the innerData
                     try {
