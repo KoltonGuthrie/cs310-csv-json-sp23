@@ -2,6 +2,10 @@ package edu.jsu.mcis.cs310;
 
 import com.github.cliftonlabs.json_simple.*;
 import com.opencsv.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Converter {
     
@@ -140,11 +144,42 @@ public class Converter {
     @SuppressWarnings("unchecked")
     public static String jsonToCsv(String jsonString) {
         
-        String result = ""; // default return value; replace later!
+        String result = "";
         
         try {
             
             // INSERT YOUR CODE HERE
+            JsonObject json = Jsoner.deserialize(jsonString, new JsonObject());
+            
+            StringWriter writer = new StringWriter();
+            CSVWriter csvWriter = new CSVWriter(writer, ',', '"', '\\', "\n");
+            
+            JsonArray colHeadings = (JsonArray) json.get("ColHeadings");
+            JsonArray prodNum = (JsonArray) json.get("ProdNums");
+            JsonArray data = (JsonArray) json.get("Data");
+
+            csvWriter.writeNext(jsonArrayToStringArray(colHeadings));
+            
+            for(int i = 0; i < data.size(); i++) {
+                String[] arr = new String[colHeadings.size()];
+                
+                arr[0] = (String) prodNum.get(i);
+                
+                JsonArray innerData = ((JsonArray) data.get(i));
+                
+                for(int j = 0; j < innerData.size(); j++) {
+                    String str = ((JsonArray) data.get(i)).get(j) + "";
+                    
+                    if( j == 2 ) {
+                        arr[j+1] = String.format("%02d", Integer.parseInt(str));
+                    } else {
+                        arr[j+1] = str;
+                    }
+                }
+                csvWriter.writeNext(arr);
+            }
+            
+            result = writer.toString();
             
         }
         catch (Exception e) {
@@ -153,6 +188,18 @@ public class Converter {
         
         return result.trim();
         
+    }
+    
+    private static String[] jsonArrayToStringArray(JsonArray jsonArray) {
+        Object[] arr = jsonArray.toArray();
+        
+        String[] stringArray = new String[arr.length];
+        
+        for(int i = 0; i < arr.length; i++) {
+            stringArray[i] = (String) arr[i];
+        }
+
+        return stringArray;
     }
     
 }
