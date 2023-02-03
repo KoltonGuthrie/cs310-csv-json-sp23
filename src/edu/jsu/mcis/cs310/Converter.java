@@ -87,23 +87,30 @@ public class Converter {
             JsonArray colHeadings = new JsonArray();
             JsonArray data = new JsonArray();
             
+            // Initializes the reader and csvReader
             Reader reader = new StringReader(csvString);
-            CSVReader csvWriter = new CSVReader(reader);
+            CSVReader csvReader = new CSVReader(reader);
             
-            String[] row = csvWriter.readNext();
+            // Gets the first row and stores all the headings
+            String[] row = csvReader.readNext();
             
             for ( String headings : row ) {
                 colHeadings.add(headings);
             }
                          
-            row = csvWriter.readNext();
+            // Gets next row
+            row = csvReader.readNext();
                
+            // If row does not exist, stop the while loop
             while(row != null) {
                
+               // Store the first column in the prodNums
                prodNums.add(row[0]);
                
+               // Create the JSON array to store the innerData
                JsonArray innerData = new JsonArray();
                
+               // Looping through all other rows
                for(int j = 1; j < row.length; j++ ) {
                     final String x = row[j];
                     
@@ -120,19 +127,23 @@ public class Converter {
                     }
                 }
                
+                // Adding innerData to the data json array
                 data.add(innerData);
                 
+                // Adding all the json arrays to the json object
                 result.put("ProdNums", prodNums);
                 result.put("ColHeadings", colHeadings);
                 result.put("Data", data);
                
-                row = csvWriter.readNext();
+                // Getting the next row
+                row = csvReader.readNext();
             }
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         
+        // Returns the json as a string
         return Jsoner.serialize(result);
         
     }
@@ -144,12 +155,14 @@ public class Converter {
         
         try {
             
-            // INSERT YOUR CODE HERE
+            // Create a json object from the jsonString
             JsonObject json = Jsoner.deserialize(jsonString, new JsonObject());
             
+            // Initializes the writer and csvWriter
             StringWriter writer = new StringWriter();
             CSVWriter csvWriter = new CSVWriter(writer, ',', '"', '\\', "\n");
             
+            // Read the json array from the json object 
             JsonArray colHeadings = (JsonArray) json.get("ColHeadings");
             JsonArray prodNum = (JsonArray) json.get("ProdNums");
             JsonArray data = (JsonArray) json.get("Data");
@@ -159,27 +172,36 @@ public class Converter {
             // https://stackoverflow.com/a/1018798
             String[] headings = Arrays.copyOf(colHeadings.toArray(), colHeadings.toArray().length, String[].class);
 
+            // Writing the headings to the csvWriter
             csvWriter.writeNext(headings);
             
+            // Looping through the data jsonArray
             for(int i = 0; i < data.size(); i++) {
+                // Creating a String array with the size of colHeadings
                 String[] arr = new String[colHeadings.size()];
                 
+                // Storing the prodNum as the first element in the array
                 arr[0] = (String) prodNum.get(i);
                 
+                // Getting the innerData
                 JsonArray innerData = ((JsonArray) data.get(i));
                 
-                for(int j = 0; j < innerData.size(); j++) {
-                    String str = ((JsonArray) data.get(i)).get(j) + "";
+                // Looping through all the innerData and storing that information into the String array
+                for(int j = 1; j <= innerData.size(); j++) {
+                    String str = ((JsonArray) data.get(i)).get(j-1) + "";
                     
-                    if( j == 2 ) {
-                        arr[j+1] = String.format("%02d", Integer.parseInt(str));
+                    // If we're at index 3 in the array, format the number to have a leading 0. If not, just save the string into the array
+                    if( j == 3 ) {
+                        arr[j] = String.format("%02d", Integer.parseInt(str));
                     } else {
-                        arr[j+1] = str;
+                        arr[j] = str;
                     }
                 }
+                // Write the array out to the csvWriter
                 csvWriter.writeNext(arr);
             }
             
+            // Save the writer string value to the result
             result = writer.toString();
             
         }
@@ -187,6 +209,7 @@ public class Converter {
             e.printStackTrace();
         }
         
+        // Return the result
         return result.trim();
         
     }
