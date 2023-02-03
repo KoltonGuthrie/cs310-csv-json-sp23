@@ -188,7 +188,8 @@ public class Converter {
                 
                 // Looping through all the innerData and storing that information into the String array
                 for(int j = 1; j <= innerData.size(); j++) {
-                    String str = ((JsonArray) data.get(i)).get(j-1) + "";
+                    // Getting the column from the data at index i and the column from index j-1
+                    String str = ((JsonArray) data.get(i)).get(j-1).toString();
                     
                     // If we're at the heading "Episode" in the array, format the number to have a leading 0. If not, just save the string into the array
                     if(headings[j].equals("Episode")) {
