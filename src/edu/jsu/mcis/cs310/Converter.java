@@ -190,8 +190,8 @@ public class Converter {
                 for(int j = 1; j <= innerData.size(); j++) {
                     String str = ((JsonArray) data.get(i)).get(j-1) + "";
                     
-                    // If we're at index 3 in the array, format the number to have a leading 0. If not, just save the string into the array
-                    if( j == 3 ) {
+                    // If we're at the hading "Episode" in the array, format the number to have a leading 0. If not, just save the string into the array
+                    if(headings[j].equals("Episode")) {
                         arr[j] = String.format("%02d", Integer.parseInt(str));
                     } else {
                         arr[j] = str;
