@@ -113,18 +113,14 @@ public class Converter {
                // Looping through all other rows
                for(int j = 1; j < row.length; j++ ) {
                     final String x = row[j];
-                    
-                    // Try/catch to check if String is an int. If so, add it to the innerData as an int. Otherwise, add the String to the innerData
-                    try {
-                        
+
+                    if ( colHeadings.toArray()[j].equals("Episode") || colHeadings.toArray()[j].equals("Season")) {
                         final int num = Integer.parseInt(x);
                         innerData.add(num);
-                        
-                    } catch(NumberFormatException e) {
-                        
+                    } else {
                         innerData.add(x);
-                        
                     }
+                    
                 }
                
                 // Adding innerData to the data json array
